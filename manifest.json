@@ -4,7 +4,7 @@
   "description": "Messenger in Omnibox",
   "manifest_version": 2,
   "permissions": [
-      "tabs", "activeTab", "https://www.messenger.com/", "storage" 
+      "tabs", "activeTab", "https://www.messenger.com/", "storage"
   ],
 
   "omnibox": { "keyword" : "msg" },
