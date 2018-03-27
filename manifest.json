@@ -1,0 +1,27 @@
+{
+  "name": "Loosh's Extension",
+  "version": "1.0",
+  "description": "Messenger in Omnibox",
+  "manifest_version": 2,
+  "permissions": [
+      "tabs", "activeTab", "https://www.messenger.com/", "storage" 
+  ],
+
+  "omnibox": { "keyword" : "msg" },
+  "icons": {
+     "16": "16-full-color.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.messenger.com/*"],
+      "js": ["messengerParasite.js", "node_modules/jquery/dist/jquery.min.js"],
+      "run_at": "document_end"
+    }
+],
+
+ "background": {
+      "persistent": false,
+      "scripts": ["background.js"]
+    }
+}
