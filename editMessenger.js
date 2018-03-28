@@ -16,9 +16,6 @@ if (collection == null) {
     var evt = document.createEvent("HTMLEvents");
     evt.initEvent("change", false, true); // adding this created a magic and passes it as if
     contents.dispatchEvent(evt);
-
-
-
 }
 // searchBox.click();
 }
