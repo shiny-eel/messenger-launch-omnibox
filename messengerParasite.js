@@ -1,13 +1,22 @@
+"use strict";
 const USERNAME_KEY = "LIST OF PEOPLE";
 const TITLE_KEY = "LIST OF TITLES";
-const maxSaved = 10;
+const maxSaved = 30;
 
 // import loadPeople from 'contentsLoader'; // or './module'
 
 console.log("Messenger Parasite Active!");
 waitThenGetTitle();
-// getCurrentPerson(loadPeople);
-// savePeople(null,null);
+
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        console.log(sender.tab ?
+            "from another:" + sender.tab.url :
+            "from the extension");
+        if (request.haveURL === "true"){
+            waitThenGetTitle();
+        }
+    });
 
 function waitThenGetTitle() {
     if (document.readyState != 'complete') {
@@ -113,17 +122,17 @@ function updatePeople(title, username, callback) {
 //           }
 //       });
 
-
-class Data {
-    constructor(titles, usernames) {
-        this.titles = titles;
-        this.usernames = usernames;
-    }
-    add(title, username) {
-        this.titles.push(title);
-        this.usernames.push(username);
-    }
-}
+//
+// class Data {
+//     constructor(titles, usernames) {
+//         this.titles = titles;
+//         this.usernames = usernames;
+//     }
+//     add(title, username) {
+//         this.titles.push(title);
+//         this.usernames.push(username);
+//     }
+// }
 
 function savePeople(titles, people, callback) {
     console.log("STORE ALL PEOPLE")
@@ -158,7 +167,6 @@ function getNameFromURL(url) {
 
 
 function loadPeople(callback) {
-    console.log("LOAD SAVED PEOPLE");
     let allUsernames;
     let allTitles;
     chrome.storage.sync.get(null, function(result) {
