@@ -12,23 +12,23 @@ loadPeople();
 startListen();
 
 loadPeople(function(people) {
-    console.log("Found this many people ="+people.length);
+    console.log("Found this many people =" + people.length);
     myPeople = people;
 });
 
 chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
-    console.log("New input is: "+text);
+    console.log("New input is: " + text);
     currentSuggestText = text;
     queryPeople(text, function(results) {
         console.log(results);
         if (results.length > 0) {
             currentSuggestContent = results[0].content;
-            chrome.omnibox.setDefaultSuggestion(
-                { description: results[0].description }
-            );
+            chrome.omnibox.setDefaultSuggestion({
+                description: results[0].description
+            });
 
             let numVisible = Math.max(results.length, 5);
-            var resultsToReturn = results.slice(1,numVisible-1);
+            var resultsToReturn = results.slice(1, numVisible - 1);
             // console.log(results.constructor);
             // suggest(results);
             suggest(resultsToReturn);
@@ -43,7 +43,7 @@ chrome.omnibox.onInputEntered.addListener(
         if (text == currentSuggestText) {
             console.log("Default suggestion selected");
             text = currentSuggestContent;
-        goToMessenger(text);
+            goToMessenger(text);
         }
     });
 
@@ -52,8 +52,8 @@ function goToMessenger(text) {
     desiredURL = text;
     var oldTabID
     // Encode user input for special characters , / ? : @ & = + $ #
-    console.log("Going to Messenger tab. "+
-                "Desired URL ="+desiredURL);
+    console.log("Going to Messenger tab. " +
+        "Desired URL =" + desiredURL);
 
     chrome.tabs.query({
         "url": fbMessengerURL
@@ -84,9 +84,9 @@ function goToMessenger(text) {
 }
 
 function switchToPerson(url) {
-    chrome.tabs.executeScript(
-        {file: "editMessenger.js"}
-    );
+    chrome.tabs.executeScript({
+        file: "editMessenger.js"
+    });
 }
 
 function pinTab(tab, callback) {
@@ -104,6 +104,7 @@ function startListen() {
 }
 
 let listening = false;
+
 function listenToMessengerPage(tabID) {
     if (listening) {
         return;
@@ -116,7 +117,7 @@ function listenToMessengerPage(tabID) {
 
             console.log("Updating the parasite.");
 
-            chrome.tabs.sendMessage(tab.id,{
+            chrome.tabs.sendMessage(tab.id, {
                 haveURL: "true"
             });
         }
@@ -132,15 +133,15 @@ function queryPeople(text, callback) {
         console.log("Help Called For.");
         callback(null);
     } else {
-        console.log("Matching with text="+text);
+        console.log("Matching with text=" + text);
         let results = [];
         let person;
         let matchCounter = 0;
-        for (let i = 0; i<myPeople.length; i++) {
+        for (let i = 0; i < myPeople.length; i++) {
             person = myPeople[i];
             let matchStrength = person.match(text);
             if (matchStrength == 2) {
-                console.log("STRONG MATCH FOUND ="+text+" "+person.title);
+                console.log("STRONG MATCH FOUND =" + text + " " + person.title);
                 results.unshift(person.asSuggestion());
                 matchCounter++;
             } else if (matchStrength == 1) {
@@ -150,8 +151,8 @@ function queryPeople(text, callback) {
                 // Doesn't match
             }
         }
-        console.log("Number of matches: "+matchCounter);
-        console.log("Number of results: "+results.length);
+        console.log("Number of matches: " + matchCounter);
+        console.log("Number of results: " + results.length);
         callback(results);
     }
 
@@ -164,12 +165,12 @@ chrome.runtime.onMessage.addListener(
         // console.log(sender.tab ?
         //     "from a content script:" + sender.tab.url :
         //     "from the extension");
-        if (request.greeting == "getPerson"){
+        if (request.greeting == "getPerson") {
             sendResponse({
                 username: sender.tab.url
             });
         } else if (request.greeting == "getDesiredURL") {
-            console.log("Request for desired URL. sending ="+desiredURL);
+            console.log("Request for desired URL. sending =" + desiredURL);
             sendResponse({
                 url: desiredURL
             })
@@ -223,7 +224,7 @@ class Person {
             console.log("HEY IT IS A-Jay!");
         let allNames = this.title.split("\\s+");
         // console.log("Allnames length ="+allNames.length+" "+allNames);
-        for (let i=0; i<allNames.length; i++) {
+        for (let i = 0; i < allNames.length; i++) {
             if (allNames[i].toLowerCase().startsWith(lowerText))
                 return 2;
         }
@@ -235,7 +236,7 @@ class Person {
     }
     asSuggestion() {
         let suggestion = {
-            content: fbMessengerURL.replace("*", "t/"+this.username),
+            content: fbMessengerURL.replace("*", "t/" + this.username),
             description: this.title
         };
         return suggestion;
