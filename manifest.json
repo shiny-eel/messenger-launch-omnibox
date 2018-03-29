@@ -4,7 +4,7 @@
   "description": "Messenger in Omnibox",
   "manifest_version": 2,
   "permissions": [
-      "tabs", "activeTab", "https://www.messenger.com/", "storage"
+      "tabs", "activeTab", "https://www.messenger.com/", "storage", "background"
   ],
 
   "omnibox": { "keyword" : "msg" },
@@ -15,13 +15,13 @@
   "content_scripts": [
     {
       "matches": ["*://*.messenger.com/*"],
-      "js": ["messengerParasite.js", "node_modules/jquery/dist/jquery.min.js"],
+      "js": ["messengerParasite.js"],
       "run_at": "document_end"
     }
 ],
 
  "background": {
       "persistent": false,
-      "scripts": ["background.js"]
+      "scripts": ["util.js","background.js"]
     }
 }

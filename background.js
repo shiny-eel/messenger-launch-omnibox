@@ -1,6 +1,7 @@
-"use strict";
+// import {Person} from './util.js';
 
 const fbMessengerURL = "https://www.messenger.com/*";
+const plainURL = "https://www.messenger.com/"
 const USERNAME_KEY = "LIST OF PEOPLE";
 const TITLE_KEY = "LIST OF TITLES";
 
@@ -8,15 +9,19 @@ let currentSuggestText;
 let currentSuggestContent;
 let desiredURL = "DEFAULT FAKE";
 let myPeople; // Let my people go!
-loadPeople();
-startListen();
+
 
 loadPeople(function(people) {
     console.log("Found this many people =" + people.length);
     myPeople = people;
 });
+startListen();
 
+// Method to be called when the user types/deletes something
+// Changes the suggested options
+const maxResults = 5;
 chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
+
     console.log("New input is: " + text);
     currentSuggestText = text;
     queryPeople(text, function(results) {
@@ -27,11 +32,16 @@ chrome.omnibox.onInputChanged.addListener(function(text, suggest) {
                 description: results[0].description
             });
 
-            let numVisible = Math.max(results.length, 5);
+            let numVisible = Math.max(results.length, maxResults);
             var resultsToReturn = results.slice(1, numVisible - 1);
             // console.log(results.constructor);
             // suggest(results);
             suggest(resultsToReturn);
+        } else {
+            currentSuggestContent = plainURL;
+            chrome.omnibox.setDefaultSuggestion({
+                description: "Go to Messenger"
+            });
         }
     });
 })
@@ -43,12 +53,20 @@ chrome.omnibox.onInputEntered.addListener(
         if (text == currentSuggestText) {
             console.log("Default suggestion selected");
             text = currentSuggestContent;
-            goToMessenger(text);
+            executeMessengerLaunch(text);
         }
     });
 
+function executeMessengerLaunch(text) {
+    goToMessengerTab(text, function(tab) {
+        pinTab(tab, function(tabId) {
+            switchToPerson();
+            listenToMessengerPage(tabId);
+        })
+    })
+}
 
-function goToMessenger(text) {
+function goToMessengerTab(text, callback) {
     desiredURL = text;
     var oldTabID
     // Encode user input for special characters , / ? : @ & = + $ #
@@ -66,9 +84,9 @@ function goToMessenger(text) {
                 "highlighted": true,
                 "active": true
             }, function(tab) {
-                switchToPerson();
-                pinTab(tab, listenToMessengerPage);
-
+                // switchToPerson();
+                // pinTab(tab, listenToMessengerPage);
+                callback(tab);
             });
 
         } else { // Messenger tab needs to be created
@@ -76,14 +94,15 @@ function goToMessenger(text) {
             chrome.tabs.create({
                 url: text
             }, function(tab) {
-                switchToPerson();
-                pinTab(tab, listenToMessengerPage);
+                // switchToPerson();
+                // pinTab(tab, listenToMessengerPage);
+                callback(tab);
             });
         }
     });
 }
 
-function switchToPerson(url) {
+function switchToPerson() {
     chrome.tabs.executeScript({
         file: "editMessenger.js"
     });
@@ -99,12 +118,14 @@ function startListen() {
     chrome.tabs.query({
         "url": fbMessengerURL
     }, function(tabs) {
-        listenToMessengerPage(tabs[0].id);
+        if (tabs && tabs.length > 0)
+            listenToMessengerPage(tabs[0].id);
     });
 }
 
+// Create a listener to update the Messenger Parasite of URL changes
+// So the Parasite can add more people to its database
 let listening = false;
-
 function listenToMessengerPage(tabID) {
     if (listening) {
         return;
@@ -118,10 +139,9 @@ function listenToMessengerPage(tabID) {
             console.log("Updating the parasite.");
 
             chrome.tabs.sendMessage(tab.id, {
-                haveURL: "true"
+                urlChange: "true"
             });
         }
-        loadPeople();
     });
 }
 
@@ -158,7 +178,6 @@ function queryPeople(text, callback) {
 
 }
 
-
 // Reply to the Messenger Parasite with the URL info
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -174,6 +193,9 @@ chrome.runtime.onMessage.addListener(
             sendResponse({
                 url: desiredURL
             })
+        } else if (request.greeting == "newPeople") {
+            console.log("Parasite found new people.");
+            loadPeople();
         }
     });
 
@@ -208,48 +230,3 @@ function loadPeople(callback) {
         }
     });
 }
-
-class Person {
-    constructor(title, username) {
-        this.title = title;
-        this.username = username;
-        this.matcher = title.toLowerCase() + " " + username.toLowerCase();
-        // log(this.matcher);
-    }
-    // Returns: 0 if no match, 1 if OK match, 2 if GOOD match
-    match(text) {
-        const lowerText = text.toLowerCase();
-        // let allNames = this.title.split("\\+s").push(this.username);
-        if (this.title == "Aprajit Gandhi")
-            console.log("HEY IT IS A-Jay!");
-        let allNames = this.title.split("\\s+");
-        // console.log("Allnames length ="+allNames.length+" "+allNames);
-        for (let i = 0; i < allNames.length; i++) {
-            if (allNames[i].toLowerCase().startsWith(lowerText))
-                return 2;
-        }
-        if (this.matcher.includes(lowerText)) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-    asSuggestion() {
-        let suggestion = {
-            content: fbMessengerURL.replace("*", "t/" + this.username),
-            description: this.title
-        };
-        return suggestion;
-    }
-}
-// chrome.tabs.query({"highlighted": true}, function(tabs) {
-//     if (tabs.length > 0) {
-//         var tabID = tabs[0].id;
-//         log("Tab ID ="+tabID);
-//         oldTabID = tabID;
-//         // https://developer.chrome.com/extensions/tabs#method-update
-//         // chrome.tabs.update(tabID, {"highlighted": false});
-//     }
-// });
-
-// chrome.tabs.update(oldTabID, {"highlighted": false, "active": false});

@@ -7,13 +7,14 @@ const maxSaved = 30;
 
 console.log("Messenger Parasite Active!");
 waitThenGetTitle();
+// savePeople([],[]);
 
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         console.log(sender.tab ?
             "from another:" + sender.tab.url :
             "from the extension");
-        if (request.haveURL === "true") {
+        if (request.urlChange === "true") {
             waitThenGetTitle();
         }
     });
@@ -27,7 +28,19 @@ function waitThenGetTitle() {
 }
 
 function beginScript() {
-    getTitle(getUserName);
+    getTitle(function(title) {
+        getUserName(title, function(username) {
+            updatePeople(title, username, function(titles, usernames, areNewPeople) {
+                if (areNewPeople) {
+                    savePeople(titles, usernames, function() {
+                        // Tell the background script of new people
+                        newPeopleUpdate();
+                    });
+                    console.log("Parasite Script Finished.");
+                }
+            });
+        });
+    });
 }
 
 function getTitle(callback) {
@@ -51,7 +64,6 @@ function getTitle(callback) {
 }
 
 function getUserName(title, callback) {
-
     console.log("GET USER NAME")
 
     // Ask the background.js script for the current url
@@ -63,7 +75,7 @@ function getUserName(title, callback) {
         // getTitle();
 
         if (typeof callback === "function") {
-            callback(title, username, savePeople);
+            callback(username);
         }
     });
 }
@@ -73,6 +85,7 @@ function updatePeople(title, username, callback) {
     loadPeople(function(titles, usernames) {
         let allUsernames = usernames;
         let allTitles = titles;
+        let newPeople = false;
         if (allUsernames.includes(username) || allUsernames.length > maxSaved) {
             console.log("Already has this person.");
         } else {
@@ -80,59 +93,16 @@ function updatePeople(title, username, callback) {
                 console.log("Adding a person.")
                 allUsernames.push(username);
                 allTitles.push(title);
+                newPeople = true;
             } else {
                 console.log("No person to add.")
             }
         }
         if (typeof callback === "function") {
-            callback(allTitles, allUsernames);
+            callback(allTitles, allUsernames, newPeople);
         }
     });
 }
-// let allUsernames;
-// let allTitles;
-// chrome.storage.sync.get(null, function(result) {
-//           console.log('Current saved people are: ' + result[USERNAME_KEY]);
-//           console.log('Current saved titles are: ' + result[TITLE_KEY]);
-//           if (!result[USERNAME_KEY] || !result[TITLE_KEY]) {
-//               // Null contents
-//               callback([title],[username]);
-//               return;
-//           }
-//           if (result[USERNAME_KEY].constructor === Array && result[TITLE_KEY].constructor === Array) {
-//               // console.log("IT IS AN ARRAY");
-//               allUsernames = result[USERNAME_KEY];
-//               allTitles = result[TITLE_KEY];
-//               if (allUsernames.includes(username) || allUsernames.length > maxSaved) {
-//                   console.log("Already has this person.");
-//               } else {
-//                   if (username && title) {
-//                       console.log("Adding a person.")
-//                       allUsernames.push(username);
-//                       allTitles.push(title);
-//                   } else {
-//                       console.log("No person to add.")
-//                   }
-//               }
-//           } else {
-//               console.log("Failure to read proper settings.");
-//           }
-//           if (typeof callback === "function") {
-//               callback(allTitles, allUsernames);
-//           }
-//       });
-
-//
-// class Data {
-//     constructor(titles, usernames) {
-//         this.titles = titles;
-//         this.usernames = usernames;
-//     }
-//     add(title, username) {
-//         this.titles.push(title);
-//         this.usernames.push(username);
-//     }
-// }
 
 function savePeople(titles, people, callback) {
     console.log("STORE ALL PEOPLE")
@@ -144,14 +114,16 @@ function savePeople(titles, people, callback) {
     chrome.storage.sync.set(items, function() {
         console.log('Saved people are: ' + items[USERNAME_KEY]);
         console.log('Saved titles are: ' + items[TITLE_KEY]);
+        if (typeof callback === "function") {
+            callback();
+        }
     });
-    if (typeof callback === "function") {
-        callback();
-    }
 }
 
-function pushArray(arr, arr2) {
-    arr.push.apply(arr, arr2);
+function newPeopleUpdate() {
+    chrome.runtime.sendMessage({
+        greeting: "newPeople"
+    });
 }
 
 function getNameFromURL(url) {
