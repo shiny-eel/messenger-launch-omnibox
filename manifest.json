@@ -12,10 +12,19 @@
      "16": "16-full-color.png"
   },
 
+  "browser_action": {
+          "default_icon": {
+            "16": "16-full-color.png",
+            "24": "16-full-color.png",
+            "32": "16-full-color.png"
+          },
+          "default_title": "Messenger Launcher"
+    },
+
   "content_scripts": [
     {
       "matches": ["*://*.messenger.com/*"],
-      "js": ["messengerParasite.js"],
+      "js": ["util.js","messengerParasite.js"],
       "run_at": "document_end"
     }
 ],

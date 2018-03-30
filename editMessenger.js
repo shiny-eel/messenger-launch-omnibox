@@ -7,20 +7,23 @@ try {
     getDesiredURL(function(url) {
         let maxScrolls = 5;
         let scrollCount = 1;
-        let intervals = setInterval(function() {
+        if (!editThing(url)) {
 
-            if (!editThing(url) && scrollCount < maxScrolls) {
-                console.log("Executing scroll down");
-                scrollDown(scrollCount, function() {
-                    // setTimeout()
-                    scrollCount++;
-                });
-            } else {
-                console.log("Finished scrolling.");
-                clearInterval(intervals);
-            }
+            let intervals = setInterval(function() {
 
-        }, loadWaitMillis);
+                if (!editThing(url) && scrollCount < maxScrolls) {
+                    console.log("Executing scroll down");
+                    scrollDown(scrollCount, function() {
+                        // setTimeout()
+                        scrollCount++;
+                    });
+                } else {
+                    console.log("Finished scrolling.");
+                    clearInterval(intervals);
+                }
+
+            }, loadWaitMillis);
+        }
     });
     console.log("End of editMessenger.js");
 } catch (err) {

@@ -13,6 +13,8 @@ let myPeople; // Let my people go!
 
 loadPeople(function(people) {
     console.log("Found this many people =" + people.length);
+    chrome.browserAction.setBadgeText({text: ""+people.length}); // Update extension badge
+
     myPeople = people;
 });
 startListen();
@@ -53,8 +55,8 @@ chrome.omnibox.onInputEntered.addListener(
         if (text == currentSuggestText) {
             console.log("Default suggestion selected");
             text = currentSuggestContent;
-            executeMessengerLaunch(text);
         }
+        executeMessengerLaunch(text);
     });
 
 function executeMessengerLaunch(text) {
@@ -135,7 +137,7 @@ function listenToMessengerPage(tabID) {
 
     chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
         if (info.url && tab.url.match(fbMessengerURL)) {
-
+            // TODO: Check people before sending update
             console.log("Updating the parasite.");
 
             chrome.tabs.sendMessage(tab.id, {
@@ -195,38 +197,9 @@ chrome.runtime.onMessage.addListener(
             })
         } else if (request.greeting == "newPeople") {
             console.log("Parasite found new people.");
-            loadPeople();
+            loadPeople(function(people) {
+                myPeople = people;
+                chrome.browserAction.setBadgeText({text: ""+people.length}); // Update extension badge
+            });
         }
     });
-
-function loadPeople(callback) {
-    console.log("LOAD SAVED PEOPLE");
-    let allUsernames;
-    let allTitles;
-    let people = [];
-    chrome.storage.sync.get(null, function(result) {
-        console.log('Current saved people are: ' + result[USERNAME_KEY]);
-        console.log('Current saved titles are: ' + result[TITLE_KEY]);
-        if (!result[USERNAME_KEY] || !result[TITLE_KEY]) {
-            // Null contents
-            callback([], []);
-            return;
-        }
-        if (result[USERNAME_KEY].constructor === Array && result[TITLE_KEY].constructor === Array) {
-
-            allUsernames = result[USERNAME_KEY];
-            allTitles = result[TITLE_KEY];
-            var arrayLength = allUsernames.length;
-            for (var i = 0; i < arrayLength; i++) {
-                // log(allUsernames[i]);
-                people.push(new Person(allTitles[i], allUsernames[i]));
-            }
-
-        } else {
-            console.log("Failure to read proper settings.");
-        }
-        if (typeof callback === "function") {
-            callback(people);
-        }
-    });
-}
