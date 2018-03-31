@@ -83,7 +83,7 @@ function getDesiredURL(callback) {
     chrome.runtime.sendMessage({
         greeting: "getDesiredURL"
     }, function(response) {
-        console.log("Response = " + response.url);
+        console.log("URL to go to = " + response.url);
 
         if (typeof callback === "function") {
             callback(response.url);

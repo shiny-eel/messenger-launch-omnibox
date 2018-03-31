@@ -41,7 +41,7 @@ function loadPeople(callback) {
         console.log('Current saved people are: ' + result[TITLE_KEY]);
         if (!result[USERNAME_KEY] || !result[TITLE_KEY]) {
             // Null contents
-            callback([], []);
+            callback([], [], []);
             return;
         }
         if (result[USERNAME_KEY].constructor === Array && result[TITLE_KEY].constructor === Array) {
