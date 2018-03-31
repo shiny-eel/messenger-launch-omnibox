@@ -1,5 +1,6 @@
 {
-  "name": "Messenger",
+  "name": "mail - Messenger App Intelligent Launcher",
+  "short_name": "mail",
   "version": "0.1",
   "description": "Messenger in Omnibox",
   "manifest_version": 2,
@@ -22,7 +23,7 @@
             "24": "resources/mailbox_colour.png",
             "32": "resources/mailbox_colour.png"
           },
-          "default_title": "Messenger Launcher"
+          "default_title": "mail - Messenger Launcher"
     },
 
   "content_scripts": [
