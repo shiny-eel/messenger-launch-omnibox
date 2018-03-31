@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener(
             "Message from another:" + sender.tab.url :
             "Message from the extension"));
         if (request.urlChange === "true") {
-            waitThengetCurrentChatTitle();
+            waitThenStart();
         }
     });
 
@@ -71,6 +71,7 @@ function getCurrentChatTitle(callback) {
     callback(realTitle, updatePeople);
 }
 
+// Get username by asking background script for url
 function getUserName(title, callback) {
     // console.log("Parasite: GET USER NAME")
     // Ask the background.js script for the current url
@@ -112,7 +113,6 @@ function updatePeople(title, username, callback) {
     });
 }
 
-
 function getPeople(callback) {
     if (0) { // Don't need to reload from persistence
 
@@ -146,28 +146,3 @@ function getNameFromURL(url) {
     console.log("Person's username is: " + newString);
     return newString;
 }
-
-
-// function loadPeople(callback) {
-//     let allUsernames;
-//     let allTitles;
-//     chrome.storage.sync.get(null, function(result) {
-//         console.log('Current saved people are: ' + result[USERNAME_KEY]);
-//         console.log('Current saved titles are: ' + result[TITLE_KEY]);
-//         if (!result[USERNAME_KEY] || !result[TITLE_KEY]) {
-//             // Null contents
-//             callback([], []);
-//             return;
-//         }
-//         if (result[USERNAME_KEY].constructor === Array && result[TITLE_KEY].constructor === Array) {
-//             allUsernames = result[USERNAME_KEY];
-//             allTitles = result[TITLE_KEY];
-//
-//         } else {
-//             console.log("Failure to read proper settings.");
-//         }
-//         if (typeof callback === "function") {
-//             callback(allTitles, allUsernames);
-//         }
-//     });
-// }
