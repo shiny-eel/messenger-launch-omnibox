@@ -10,7 +10,7 @@ let currentPeople = [];
 // import loadPeople from 'contentsLoader'; // or './module'
 
 console.log("Messenger Parasite Active!");
-waitThenGetTitle();
+waitThenStart();
 // savePeople([],[]);
 
 chrome.runtime.onMessage.addListener(
@@ -19,11 +19,11 @@ chrome.runtime.onMessage.addListener(
             "Message from another:" + sender.tab.url :
             "Message from the extension"));
         if (request.urlChange === "true") {
-            waitThenGetTitle();
+            waitThengetCurrentChatTitle();
         }
     });
 
-function waitThenGetTitle() {
+function waitThenStart() {
     if (document.readyState != 'complete') {
         window.addEventListener('load', beginScript);
     } else {
@@ -32,7 +32,7 @@ function waitThenGetTitle() {
 }
 
 function beginScript() {
-    getTitle(function(title) {
+    getCurrentChatTitle(function(title) {
         if (currentTitles.includes(title)) {
             console.log("Parasite: Already has this person.");
             return;
@@ -51,7 +51,7 @@ function beginScript() {
     });
 }
 
-function getTitle(callback) {
+function getCurrentChatTitle(callback) {
     // console.log("Parasite: GET TITLE")
     const id = "js_5";
     console.log("Document ready state = " + document.readyState);
