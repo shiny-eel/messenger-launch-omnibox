@@ -6,7 +6,7 @@ README Updated: **31/03/18**
 ___
 
 ### Overview
-Mail is intended to be an efficient, lightweight add-on for those who use the [Facebook Messenger](https://www.messenger.com/) browser site often. It speeds up workflow by removing the need to interact with the Messenger page's UI to open specific chats, instead using the power of the **Omnibox** (Chrome's address bar).
+Mail is intended to be an efficient, lightweight add-on for those who use the [Facebook Messenger](https://www.messenger.com/) browser site often. It speeds up workflow by removing the need to interact with the Messenger page's UI to open specific chats, by instead using the power of the **Omnibox** (Chrome's address bar).
 
 ![So speedy!](https://raw.githubusercontent.com/shiny-eel/messenger-launch/master/resources/messenger-demo.gif)
 
