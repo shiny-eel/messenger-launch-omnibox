@@ -41,6 +41,14 @@ function loadPeople(callback) {
         console.log('Current saved people are: ' + result[TITLE_KEY]);
         if (!result[USERNAME_KEY] || !result[TITLE_KEY]) {
             // Null contents
+            // console.log("HERE");
+            // allTitles = ["Lei Liao", "Eko Huang", "Agrippa Cahya", "Honorinus Octavia", "Sigeberht Januarius", "Cornelius Herminius", "Tane Awhina", "Hemi Nikora"];
+            // allUsernames = ["lei.l", "echo.echo", "cahyass", "honor", "monthlies", "sterner.stuff", "tree-tree", "hemi"];
+            // var arrayLength = allUsernames.length;
+            // for (var i = 0; i < arrayLength; i++) {
+            //     // log(allUsernames[i]);
+            //     people.push(new Person(allTitles[i], allUsernames[i]));
+            // }
             callback([], [], []);
             return;
         }
@@ -48,6 +56,7 @@ function loadPeople(callback) {
 
             allUsernames = result[USERNAME_KEY];
             allTitles = result[TITLE_KEY];
+
             var arrayLength = allUsernames.length;
             for (var i = 0; i < arrayLength; i++) {
                 // log(allUsernames[i]);
