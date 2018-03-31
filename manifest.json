@@ -1,5 +1,5 @@
 {
-  "name": "Loosh's Extension",
+  "name": "Messenger",
   "version": "1.0",
   "description": "Messenger in Omnibox",
   "manifest_version": 2,
@@ -7,16 +7,20 @@
       "tabs", "activeTab", "https://www.messenger.com/", "storage", "background"
   ],
 
-  "omnibox": { "keyword" : "msg" },
+  "omnibox": { "keyword" : "m" },
   "icons": {
-     "16": "16-full-color.png"
+     "16": "mailbox_colour.png",
+     "32": "mailbox_colour.png",
+     "48": "mailbox_colour.png",
+     "128": "mailbox_colour.png"
+
   },
 
   "browser_action": {
           "default_icon": {
-            "16": "16-full-color.png",
-            "24": "16-full-color.png",
-            "32": "16-full-color.png"
+            "16": "mailbox_colour.png",
+            "24": "mailbox_colour.png",
+            "32": "mailbox_colour.png"
           },
           "default_title": "Messenger Launcher"
     },
