@@ -62,12 +62,14 @@ chrome.omnibox.onInputEntered.addListener(
 function executeMessengerLaunch(text) {
     goToMessengerTab(text, function(tab) {
         pinTab(tab, function(tabId) {
-            switchToPerson();
+            if (text != plainURL)
+                switchToPerson();
             listenToMessengerPage(tabId);
         })
     })
 }
 
+// Creates/Goes-to the messenger tab, callsback with the tab object.
 function goToMessengerTab(text, callback) {
     desiredURL = text;
     var oldTabID
