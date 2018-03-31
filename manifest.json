@@ -30,7 +30,7 @@
     {
       "matches": ["*://*.messenger.com/*"],
       "js": ["util.js","messengerParasite.js"],
-      "run_at": "document_end"
+      "run_at": "document_idle"
     }
 ],
 
