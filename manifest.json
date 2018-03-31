@@ -9,18 +9,18 @@
 
   "omnibox": { "keyword" : "m" },
   "icons": {
-     "16": "mailbox_colour.png",
-     "32": "mailbox_colour.png",
-     "48": "mailbox_colour.png",
-     "128": "mailbox_colour.png"
+     "16": "resources/mailbox_colour.png",
+     "32": "resources/mailbox_colour.png",
+     "48": "resources/mailbox_colour.png",
+     "128": "resources/mailbox_colour.png"
 
   },
 
   "browser_action": {
           "default_icon": {
-            "16": "mailbox_colour.png",
-            "24": "mailbox_colour.png",
-            "32": "mailbox_colour.png"
+            "16": "resources/mailbox_colour.png",
+            "24": "resources/mailbox_colour.png",
+            "32": "resources/mailbox_colour.png"
           },
           "default_title": "Messenger Launcher"
     },
