@@ -49,6 +49,8 @@ function loadPeople(callback) {
             //     // log(allUsernames[i]);
             //     people.push(new Person(allTitles[i], allUsernames[i]));
             // }
+            // callback(people, allTitles, allUsernames);
+
             callback([], [], []);
             return;
         }
