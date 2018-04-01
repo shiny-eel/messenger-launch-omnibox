@@ -33,6 +33,15 @@ This extension runs by listening to and acting upon Chrome tabs. It simply inter
 
 Since the Zucc doesn't give public access to a Messenger API to send and receive messages with, we are stucc with using Facebook's own implementations. Mail helps improve this predicament by making messenger.com more powerful.
 
+#### Permissions
+On install, Mail will ask for permission to:
+- *Read and change data for messenger.com*
+- *Read your browsing history*
+
+While the first is pretty self explanatory, the second may sound unnecessary. The reason it comes up is that mail accesses the [tabs api](https://developer.chrome.com/extensions/tabs) to control how to open the messenger tab. [All Chrome extensions that use this api elicit this warning](https://developer.chrome.com/extensions/permission_warnings).
+
+
+
 
 
 ___
