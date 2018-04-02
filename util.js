@@ -88,7 +88,9 @@ function savePeople(titles, usernames, callback) {
     // console.log("Updated people: "+items[USERNAME_KEY]);
     chrome.storage.sync.set(items, function() {
         // console.log('Saved people are: ' + items[USERNAME_KEY]);
-        console.log('Saved people are: ' + items[TITLE_KEY]);
+        // console.log('Saved people are: ' + items[TITLE_KEY]);
+        console.log('Saved ' +items[TITLE_KEY].length+" people");
+
         if (typeof callback === "function") {
             callback();
         }

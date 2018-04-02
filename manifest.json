@@ -1,7 +1,7 @@
 {
   "name": "mail - Messenger App Intelligent Launcher",
   "short_name": "mail",
-  "version": "0.1",
+  "version": "0.14",
   "description": "Messenger in Omnibox",
   "manifest_version": 2,
   "permissions": [
