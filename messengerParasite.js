@@ -10,7 +10,9 @@ let currentPeople = [];
 // import loadPeople from 'contentsLoader'; // or './module'
 
 console.log("Messenger Parasite Active!");
-waitThenStart();
+waitThenStart(newScript);
+// waitThenStart(getConversations);
+// getConversations();
 // savePeople([],[]);
 
 chrome.runtime.onMessage.addListener(
@@ -23,30 +25,44 @@ chrome.runtime.onMessage.addListener(
         }
     });
 
-function waitThenStart() {
+function waitThenStart(callback) {
     if (document.readyState != 'complete') {
-        window.addEventListener('load', beginScript);
+        window.addEventListener('load', callback);
     } else {
-        beginScript();
+        callback();
     }
 }
 
-function beginScript() {
-    getCurrentChatTitle(function(title) {
-        if (currentTitles.includes(title)) {
-            console.log("Parasite: Already has this person.");
-            return;
-        }
-        getUserName(title, function(username) {
-            updatePeople(title, username, function(titles, usernames, areNewPeople) {
-                if (areNewPeople) {
-                    savePeople(titles, usernames, function() {
-                        // Tell the background script of new people
-                        newPeopleUpdate();
-                    });
-                    console.log("Parasite Script Finished.");
-                }
-            });
+// function beginScript() {
+//     getCurrentChatTitle(function(title) {
+//         if (currentTitles.includes(title)) {
+//             console.log("Parasite: Already has this person.");
+//             return;
+//         }
+//         getUserName(title, function(username) {
+//             updatePeople(title, username, function(titles, usernames, areNewPeople) {
+//                 if (areNewPeople) {
+//                     savePeople(titles, usernames, function() {
+//                         // Tell the background script of new people
+//                         newPeopleUpdate();
+//                     });
+//                     console.log("Parasite Script Finished.");
+//                 }
+//             });
+//         });
+//     });
+// }
+
+function newScript() {
+    getConversations(function(unames, titles) {
+        updatePeople(titles, unames, function(sumTitles, sumUnames, areNewPeople) {
+            if (areNewPeople) {
+                savePeople(sumTitles, sumUnames, function() {
+                    // Tell the background script of new people
+                    newPeopleUpdate();
+                });
+            }
+            console.log("Parasite Script Finished.");
         });
     });
 }
@@ -90,25 +106,29 @@ function getUserName(title, callback) {
     });
 }
 
-function updatePeople(title, username, callback) {
+function updatePeople(newTitles, newUsernames, callback) {
 
-    getPeople(function(people, allTitles, allUsernames) {
+    getPeople(function(people, currentTitles, currentUsernames) {
         // console.log(allUsernames);
         let newPeople = false;
-        if (allUsernames.includes(username) || allUsernames.length > maxSaved) {
-            console.log("Already has this person.");
-        } else {
-            if (username && title) {
-                console.log("Adding a person.")
-                allUsernames.push(username);
-                allTitles.push(title);
-                newPeople = true;
-            } else {
-                console.log("No person to add.")
+        let allUsernames = [];
+        let newPersonCounter = 0;
+        for (let i = 0; i<newTitles.length; i++) {
+            let uname = newUsernames[i];
+            let title = newTitles[i]
+            if (!currentUsernames.includes(uname)) {
+                if (uname && title) {
+                    // console.log("Adding a person.")
+                    currentUsernames.push(uname);
+                    currentTitles.push(title);
+                    newPersonCounter++;
+                    newPeople = true;
+                }
             }
         }
+        console.log("Added "+newPersonCounter+" people.");
         if (typeof callback === "function") {
-            callback(allTitles, allUsernames, newPeople);
+            callback(currentTitles, currentUsernames, newPeople);
         }
     });
 }
@@ -145,4 +165,36 @@ function getNameFromURL(url) {
     }
     console.log("Person's username is: " + newString);
     return newString;
+}
+
+// document.querySelectorAll("ul[aria-label='Conversation list']")[0].childNodes[1].querySelectorAll("a[role='link']")[0].getAttribute("data-href")
+// document.querySelectorAll("ul[aria-label='Conversation list']")[0].childNodes[1].querySelectorAll("a[role='link']")[0].querySelectorAll("span")[0].innerText
+function getConversations(callback) {
+    console.log("Attempt to find list of conversations");
+    let unames = [];
+    let titles = [];
+    try {
+        let convos = document.querySelectorAll("ul[aria-label='Conversation list']");
+
+        // console.log("Found convos. ");
+        // console.log(convos[0]);
+        let nodes = convos[0].childNodes;
+        // console.log(nodes);
+        // console.log("Found child node convos");
+        for (let i = 0; i < nodes.length; i++) {
+            let linkClass = nodes[i].querySelectorAll("a[role='link']")[0]
+            // console.log(linkClass);
+            let convoLink = linkClass.getAttribute("data-href");
+            // console.log(convoLink);
+            unames.push(getNameFromURL(convoLink));
+            let convoTitle = linkClass.querySelectorAll('span')[0].innerText;
+            titles.push(convoTitle)
+            // console.log(convoTitle);
+        }
+        console.log("Parasite: Found "+unames.length+" convos.");
+        callback(unames, titles);
+    } catch (err) {
+        console.log("Error trying to find conversations: \n" + err);
+    }
+
 }
