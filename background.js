@@ -140,13 +140,29 @@ function listenToMessengerPage(tabID) {
     chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
         if (info.url && tab.url.match(fbMessengerURL)) {
             // TODO: Check people before sending update
-            console.log("Updating the parasite.");
+            let username = getNameFromURL(tab.url);
+            if (!hasPersonAlready(username)) {
+                console.log("Updating the parasite.");
 
-            chrome.tabs.sendMessage(tab.id, {
-                urlChange: "true"
-            });
+                chrome.tabs.sendMessage(tab.id, {
+                    urlChange: "true",
+                    username: username
+                });
+            }
         }
     });
+}
+
+function hasPersonAlready(username) {
+    if (!myPeople)
+        return false;
+    for (let i=0; i<myPeople.length; i++) {
+        if (myPeople[i].username == username) {
+            console.log("Already have "+username);
+            return true;
+        }
+    }
+    return false;
 }
 
 // Takes a string input of what the user has entered

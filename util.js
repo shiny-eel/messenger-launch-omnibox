@@ -38,7 +38,6 @@ function loadPeople(callback) {
     let people = [];
     chrome.storage.sync.get(null, function(result) {
         // console.log('Current saved usernames are: ' + result[USERNAME_KEY]);
-        console.log('Current saved people are: ' + result[TITLE_KEY]);
         if (!result[USERNAME_KEY] || !result[TITLE_KEY]) {
             // Null contents
             // console.log("HERE");
@@ -55,6 +54,8 @@ function loadPeople(callback) {
             return;
         }
         if (result[USERNAME_KEY].constructor === Array && result[TITLE_KEY].constructor === Array) {
+            // console.log('Current saved people are: ' + result[TITLE_KEY]);
+            console.log("Num saved titles: " +result[TITLE_KEY].length+" num unames: "+result[USERNAME_KEY].length);
 
             allUsernames = result[USERNAME_KEY];
             allTitles = result[TITLE_KEY];
@@ -92,4 +93,15 @@ function savePeople(titles, usernames, callback) {
             callback();
         }
     });
+}
+
+function getNameFromURL(url) {
+    // https://www.messenger.com/t/revolushien
+    var newString = url.replace(/https:\/\/www\.messenger\.com\/t\//, "");
+    if (newString === "https://www.messenger.com/") {
+        console.log("No new person.");
+        return null;
+    }
+    // console.log("Person's username is: " + newString);
+    return newString;
 }
