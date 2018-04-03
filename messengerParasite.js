@@ -25,14 +25,7 @@ function addUpdateListener() {
                 waitThenStart(function() {
                     let titles = [getCurrentChatTitle()];
                     let unames = [request.username];
-                    sumPeople(titles, unames, function(sumTitles, sumUnames, areNewPeople) {
-                        if (areNewPeople) {
-                            savePeople(sumTitles, sumUnames, function() {
-                                // Tell the background script of new people
-                                newPeopleUpdate();
-                            });
-                        }
-                    });
+                    tryAddPeople(titles, unames);
                 });
             }
         });
@@ -50,16 +43,23 @@ function waitThenStart(callback) {
 
 function beginScript() {
     getConversations(function(unames, titles) {
-        sumPeople(titles, unames, function(sumTitles, sumUnames, areNewPeople) {
-            if (areNewPeople) {
-                savePeople(sumTitles, sumUnames, function() {
-                    // Tell the background script of new people
-                    newPeopleUpdate();
-                });
-            }
+        tryAddPeople(titles, unames, function() {
             addUpdateListener();
-            console.log("Parasite Script Finished.");
         });
+    });
+}
+
+function tryAddPeople(newTitles, newUsernames, callback) {
+    sumPeople(newTitles, newUsernames, function(sumTitles, sumUnames, areNewPeople) {
+        if (areNewPeople) {
+            savePeople(sumTitles, sumUnames, function() {
+                // Tell the background script of new people
+                newPeopleUpdate();
+            });
+        }
+        if (typeof callback === "function") {
+            callback();
+        }
     });
 }
 
