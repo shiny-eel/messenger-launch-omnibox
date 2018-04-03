@@ -1,4 +1,5 @@
 # mail - Messenger App Intelligent Launcher
+[logo]: https://raw.githubusercontent.com/shiny-eel/messenger-launch/master/resources/mailbox_colour.png "Test"
 *A Chrome Omnibox extension for quickly launching Facebook Messenger*
 
 Author: **shiny-eel**  
