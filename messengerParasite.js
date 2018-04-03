@@ -15,27 +15,28 @@ waitThenStart(beginScript);
 // getConversations();
 // savePeople([],[]);
 
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        console.log("Parasite: " + (sender.tab ?
-            "Message from another:" + sender.tab.url :
-            "Message from the extension"));
-        if (request.urlChange === "true") {
-            waitThenStart(function() {
-                let titles = [getCurrentChatTitle()];
-                let unames = [request.username];
-                updatePeople(titles, unames, function(sumTitles, sumUnames, areNewPeople) {
-                    if (areNewPeople) {
-                        savePeople(sumTitles, sumUnames, function() {
-                            // Tell the background script of new people
-                            newPeopleUpdate();
-                        });
-                    }
-                    console.log("Parasite Script Finished.");
+function addUpdateListener() {
+    chrome.runtime.onMessage.addListener(
+        function(request, sender, sendResponse) {
+            console.log("Parasite: " + (sender.tab ?
+                "Message from another:" + sender.tab.url :
+                "Message from the extension"));
+            if (request.urlChange === "true") {
+                waitThenStart(function() {
+                    let titles = [getCurrentChatTitle()];
+                    let unames = [request.username];
+                    sumPeople(titles, unames, function(sumTitles, sumUnames, areNewPeople) {
+                        if (areNewPeople) {
+                            savePeople(sumTitles, sumUnames, function() {
+                                // Tell the background script of new people
+                                newPeopleUpdate();
+                            });
+                        }
+                    });
                 });
-            });
-        }
-    });
+            }
+        });
+}
 
 function waitThenStart(callback) {
     if (document.readyState != 'complete') {
@@ -49,19 +50,20 @@ function waitThenStart(callback) {
 
 function beginScript() {
     getConversations(function(unames, titles) {
-        updatePeople(titles, unames, function(sumTitles, sumUnames, areNewPeople) {
+        sumPeople(titles, unames, function(sumTitles, sumUnames, areNewPeople) {
             if (areNewPeople) {
                 savePeople(sumTitles, sumUnames, function() {
                     // Tell the background script of new people
                     newPeopleUpdate();
                 });
             }
+            addUpdateListener();
             console.log("Parasite Script Finished.");
         });
     });
 }
 
-function updatePeople(newTitles, newUsernames, callback) {
+function sumPeople(newTitles, newUsernames, callback) {
 
     getPeople(function(people, currentTitles, currentUsernames) {
         // console.log(allUsernames);
@@ -81,7 +83,7 @@ function updatePeople(newTitles, newUsernames, callback) {
                 }
             }
         }
-        console.log("Added "+newPersonCounter+" people.");
+        console.log("Added "+newPersonCounter+" to "+people.length+" people.");
         if (typeof callback === "function") {
             callback(currentTitles, currentUsernames, newPeople);
         }
@@ -170,7 +172,7 @@ function getCurrentChatTitle() {
 //             return;
 //         }
 //         getUserName(title, function(username) {
-//             updatePeople(title, username, function(titles, usernames, areNewPeople) {
+//             sumPeople(title, username, function(titles, usernames, areNewPeople) {
 //                 if (areNewPeople) {
 //                     savePeople(titles, usernames, function() {
 //                         // Tell the background script of new people
@@ -200,7 +202,7 @@ function getCurrentChatTitle() {
 //         realTitle = element.innerHTML;
 //         console.log("Title is =" + element.innerHTML);
 //     }
-//     callback(realTitle, updatePeople);
+//     callback(realTitle, sumPeople);
 // }
 
 // Get username by asking background script for url
