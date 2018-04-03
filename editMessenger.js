@@ -45,7 +45,7 @@ function editThing(url) {
         console.log("0 results found.");
         return false;
     } else {
-        console.log("this is the button found: ")
+        console.log("this is the button to click: ")
         console.log(button);
         button[0].click();
         return true;

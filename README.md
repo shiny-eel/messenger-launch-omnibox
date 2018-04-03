@@ -16,7 +16,7 @@ Mail is intended to be an efficient, lightweight add-on for those who use the [F
 - **No Login Needed**. As long as messenger.com works for you normally, Mail will too.
 
 #### How It Works
-Every time you click on a chat in messenger.com, Mail *learns* the name and address of that specific conversation. (Don't worry - Mail won't spy on the content of the chat). Then, whenever you activate Mail by typing `m [space]` into your Omnibox, Mail will suggest to you chats based on what it's learnt!  
+Every time you open messenger.com, Mail *learns* the names and urls of loaded conversations. (Don't worry - Mail won't spy on the content of the chat). Then, whenever you activate Mail by typing `m [space]` into your Omnibox, Mail will suggest to you chats based on what it's learnt!  
 
 From there, it's easy to select a suggestion, hit `[enter/return]`, and be taken straight to the conversation you were thinking about.
 
