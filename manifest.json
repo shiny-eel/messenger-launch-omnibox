@@ -2,7 +2,7 @@
   "name": "mail - Messenger App Intelligent Launcher",
   "short_name": "mail",
   "version": "0.141",
-  "description": "Messenger in Omnibox",
+  "description": "A Chrome Omnibox extension for quickly launching Facebook Messenger conversations!",
   "manifest_version": 2,
   "permissions": [
       "tabs", "activeTab", "https://www.messenger.com/", "storage", "background"
